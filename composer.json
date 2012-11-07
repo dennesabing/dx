@@ -20,6 +20,6 @@
 		"psr-0": {
 			"Dx": "DennesAbing/library/Dx"
 		},
-		"classmap" : ["DennesAbing/library/Dx/init.php"]
+		"classmap" : ["DennesAbing/library/init.php"]
 	}
 }
