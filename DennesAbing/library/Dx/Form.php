@@ -18,12 +18,15 @@ class Form extends ZendForm
 
 	/**
 	 * Form Setup from XML
-	 * @param type $xmlFile
+	 * @param string|array $xmlFile
 	 * @return type 
 	 */
-	public function formFromXml($xmlFile)
+	public function formFromXml($xml)
 	{
-		$xml = \Dx\Reader\Xml::toArray($xmlFile);
+		if (!is_array($xml))
+		{
+			$xml = \Dx\Reader\Xml::toArray($xml);
+		}
 		$fieldsets = array();
 		$elements = array();
 		if ($xml && is_array($xml))
@@ -41,9 +44,9 @@ class Form extends ZendForm
 			}
 			if (isset($xml['form']['fieldset']) && !empty($xml['form']['fieldset']))
 			{
-				foreach ($xml['form']['fieldset'] as $fs)
+				foreach ($xml['form']['fieldset'] as $key => $fs)
 				{
-					if(isset($fs['name']))
+					if (isset($fs['name']))
 					{
 						$fieldsets = $this->orderElement($fieldsets, $fs);
 					}
@@ -53,13 +56,14 @@ class Form extends ZendForm
 			{
 				foreach ($xml['form']['element'] as $ele)
 				{
-					if(isset($ele['fieldset']) && !empty($ele['fieldset']))
+					if (isset($ele['fieldset']) && !empty($ele['fieldset']))
 					{
-						$fieldsets = $this->orderElement($fieldsets[$ele['fieldset']], $ele);
+						$eleArr = array('spec' => $ele);
+						$fieldsets[$ele['fieldset']]['elements'][] = $eleArr;
 					}
-					else 
+					else
 					{
-						if(isset($ele['name']))
+						if (isset($ele['name']))
 						{
 							$elements = $this->orderElement($elements, $ele);
 						}
@@ -67,24 +71,43 @@ class Form extends ZendForm
 				}
 			}
 		}
-		
-		if(!empty($fieldsets))
+
+		if (!empty($fieldsets))
 		{
-			foreach($fieldsets as $name => $fs)
+			foreach ($fieldsets as $name => $fs)
 			{
-				$this->add($fs);
+				$add = TRUE;
+				if(empty($fs['elements']))
+				{
+					$add = FALSE;
+				}
+				if (isset($fs['enable']) && (int) $fs['enable'] == 0)
+				{
+					$add = FALSE;
+				}
+				if($add)
+				{
+					$this->add($fs);
+				}
 			}
 		}
-		if(!empty($elements))
+		if (!empty($elements))
 		{
-			foreach($elements as $name => $ele)
+			foreach ($elements as $name => $ele)
 			{
-				$this->add($ele);
+				$add = TRUE;
+				if (isset($ele['enable']) && (int) $ele['enable'] == 0)
+				{
+					$add = FALSE;
+				}
+				if($add)
+				{
+					$this->add($ele);
+				}
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Position an Element
 	 * @param array $elements Array of Elements
@@ -94,11 +117,11 @@ class Form extends ZendForm
 	public function orderElement($elements, $ele)
 	{
 		$positions = array('after', 'before');
-		foreach($positions as $pos)
+		foreach ($positions as $pos)
 		{
-			if(isset($ele[$pos]))
+			if (isset($ele[$pos]))
 			{
-				if(isset($elements[$ele[$pos]]))
+				if (isset($elements[$ele[$pos]]))
 				{
 					$keyPos = $ele[$pos];
 					unset($ele[$pos]);
@@ -110,4 +133,5 @@ class Form extends ZendForm
 		$elements[$ele['name']] = $ele;
 		return $elements;
 	}
+
 }
