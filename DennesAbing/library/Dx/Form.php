@@ -15,14 +15,65 @@ use Zend\Form\Form as ZendForm;
 
 class Form extends ZendForm
 {
-
+	/**
+	 * The Module Options
+	 * @var array
+	 */
+	protected $moduleOptions = array();
+	
+	/**
+	 * Array or XML Filename that has the form information
+	 * @var string|array
+	 */
+	protected $xmlForm = NULL;
+	
+	public function setModuleOptions($moduleOptions)
+	{
+		$this->moduleOptions = $moduleOptions;
+		return $this;
+	}
+	
+	/**
+	 * Return the Module Options
+	 * @return array
+	 */
+	public function getModuleOptions()
+	{
+		return $this->moduleOptions;
+	}
+	
+	/**
+	 * Set the XML Form filename or array
+	 * @param string|array $xmlForm Array of Form information or XML Filename
+	 * @return \Dx\Form 
+	 */
+	public function setXmlForm($xmlForm)
+	{
+		$this->xmlForm = $xmlForm;
+		return $this;
+	}
+	
+	/**
+	 * Get the XML Filename or Array
+	 * @return string|array
+	 */
+	public function getXmlForm()
+	{
+		return $this->xmlForm;
+	}
+	
 	/**
 	 * Form Setup from XML
 	 * @param string|array $xmlFile
 	 * @return type 
 	 */
-	public function formFromXml($xml)
+	public function formFromXml($xml = NULL)
 	{
+		if(!empty($xml))
+		{
+			$this->setXmlForm($xml);
+		}
+		$xml = $this->getXmlForm();
 		if (!is_array($xml))
 		{
 			$xml = \Dx\Reader\Xml::toArray($xml);

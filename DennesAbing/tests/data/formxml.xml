@@ -44,7 +44,7 @@
 		<element>
 			<name>selectToBeRemove</name>
 			<type>Zend\Form\Element\Select</type>
-			<remove>1</remove>
+			<enable>0</enable>
 			<options>
 				<label>Select 2</label>
 				<hint>Hint</hint>

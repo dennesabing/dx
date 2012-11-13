@@ -22,6 +22,18 @@ class ActionController extends AbstractActionController
 	protected $em;
 
 	/**
+	 * The Option Object
+	 * @var object
+	 */
+	protected $options;
+
+	/**
+	 * The module Prefix
+	 * @var string
+	 */
+	protected $modulePrefix = NULL;
+
+	/**
 	 * The View
 	 * @var type
 	 */
@@ -103,13 +115,13 @@ class ActionController extends AbstractActionController
 	{
 		$cache = $this->getServiceLocator()->get('dx_cache')->getFileCache()->setOptions($options);
 		$key = \Dx\Cache::name($key);
-		if($cache->hasItem($key))
+		if ($cache->hasItem($key))
 		{
 			return $cache->getItem($key);
 		}
 		return FALSE;
 	}
-	
+
 	/**
 	 * Check for cache existence in Memory
 	 * @param type $key
@@ -120,13 +132,13 @@ class ActionController extends AbstractActionController
 	{
 		$cache = $this->getServiceLocator()->get('dx_cache')->getMemoryCache()->setOptions($options);
 		$key = \Dx\Cache::name($key);
-		if($cache->hasItem($key))
+		if ($cache->hasItem($key))
 		{
 			return $cache->getItem($key);
 		}
 		return FALSE;
 	}
-	
+
 	/**
 	 * Cache $data with $key to Cache\Filesystem
 	 * @param type $key
@@ -197,4 +209,37 @@ class ActionController extends AbstractActionController
 		return $cache->setItem($key, $data);
 	}
 
+	/**
+	 * Get Module Options
+	 * @see Module.php
+	 *
+	 * @return Options
+	 */
+	public function getOptions()
+	{
+		$this->setOptions($this->getServiceLocator()->get($this->modulePrefix . '_options'));
+		return $this->options;
+	}
+
+	/**
+	 * Set Module Options
+	 *
+	 * @param AbstractOptions $options
+	 * @return $this
+	 */
+	public function setOptions($options)
+	{
+		$this->options = $options;
+		return $this;
+	}
+
+	/**
+	 * Return the session
+	 * @return \Zend\Session\Container;
+	 */
+	public function getSession()
+	{
+		return $this->getServiceLocator()->get($this->modulePrefix . '_session');
+	}
+	
 }
