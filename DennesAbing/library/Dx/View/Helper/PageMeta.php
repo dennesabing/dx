@@ -24,6 +24,7 @@ class PageMeta extends AbstractHelper
 	 */
 	public function setTitle($title)
 	{
+		$this->view->headTitle($title);
 		return $this;
 	}
 	

@@ -1,4 +1,12 @@
 <?php
+/**
+ * Cache
+ *
+ * @author Dennes B Abing <dennes.b.abing@gmail.com>
+ * @package Dx
+ * @subpackage Cache
+ * @link http://labs.madayaw.com
+ */
 
 namespace Dx;
 

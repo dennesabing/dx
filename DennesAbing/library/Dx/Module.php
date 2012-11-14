@@ -109,7 +109,7 @@ class Module
 			),
 			'view_manager' => array(
 				'template_path_stack' => array(
-					'album' => $path . '/../view',
+					$lowerCased => $path . '/../view',
 				),
 			),
 		);

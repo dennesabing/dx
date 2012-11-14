@@ -15,16 +15,19 @@ class Config
 {
 	/**
 	 * Get all Application Config
-	 * @TODO Application configuration can be app.xml in /dxapp/config/app.xml
+	 * @TODO Application configuration can be app.xml in /dxapp/config/app.xml or the autoload
 	 * return mixed array|obj  
 	 */
-	public static function getAppConfig($resource = NULL)
+	public static function getAppConfig()
 	{
-		if(!empty($resource))
+		$resource = array();
+		$global = include_once \Dx::getBaseDir('app') . 'config/autoload/global.php';
+		if(\Dx\File::check(\Dx::getBaseDir('app') . 'config/autoload/local.php'))
 		{
-			return self::getAppConfigResource($resource);
+			$local = include_once \Dx::getBaseDir('app') . 'config/autoload/local.php';
+			$resource = \Dx\ArrayManager::merge($global, $local);
 		}
-		return array();
+		return $resource;
 	}
 	
 	/**
@@ -47,11 +50,14 @@ class Config
 	 */
 	public static function getAppTheme($section = 'front')
 	{
+		$siteConfig = self::getAppConfigResource('dxsite');
+		$frontend = isset($siteConfig['theme']['frontend']) ? $siteConfig['theme']['frontend'] : 'default';
+		$backend = isset($siteConfig['theme']['backend']) ? $siteConfig['theme']['backend'] : 'default';
 		if($section == 'admin')
 		{
-			return 'default';
+			return $backend;
 		}
-		return 'default';
+		return $frontend;
 	}
 	
 	/**
