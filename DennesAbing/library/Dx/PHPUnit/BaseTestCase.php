@@ -56,6 +56,12 @@ class BaseTestCase extends PHPUnit_Framework_TestCase
 	 * @var \Zend\View\Model\ViewModel
 	 */
 	protected $viewModel;
+	
+	/**
+	 * Drop Tables on tearDown
+	 * @var boolean
+	 */
+	protected $dropDb = TRUE;
 
 	/**
 	 * Entities to be used for this Test 
@@ -97,7 +103,10 @@ class BaseTestCase extends PHPUnit_Framework_TestCase
 		if (!empty($this->doctrineEntities))
 		{
 			$tool = new \Doctrine\ORM\Tools\SchemaTool($this->em);
-//			$tool->dropSchema($this->doctrineEntities);
+			if($this->dropDb)
+			{
+				$tool->dropSchema($this->doctrineEntities);
+			}
 			$this->em->getConfiguration()->getResultCacheImpl()->flushAll();
 			$this->em->getConfiguration()->getResultCacheImpl()->deleteAll();
 		}
