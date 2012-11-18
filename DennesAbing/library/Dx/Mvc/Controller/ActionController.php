@@ -251,7 +251,11 @@ class ActionController extends AbstractActionController
 	 */
 	public function getSession()
 	{
-		return $this->getServiceLocator()->get($this->modulePrefix . '_session');
+		if($this->getServiceLocator()->get($this->modulePrefix . '_session') instanceof \Zend\Session\Container)
+		{
+			return $this->getServiceLocator()->get($this->modulePrefix . '_session');
+		}
+		return new \Zend\Session\Container($this->modulePrefix . '_session');
 	}
 
 	/**
