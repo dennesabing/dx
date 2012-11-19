@@ -36,6 +36,18 @@ class File
 	}
 	
 	/**
+	 * Check for Folder/Directory existence
+	 * @param string $dir The folder to check
+	 * @param boolean $create Create folder/directory if TRUE
+	 * @param integer $permission The permission when creating the folder/director
+	 * @return boolean
+	 */
+	public static function checkDir($dir, $create = FALSE, $permission = 0755)
+	{
+		return file_exists(self::fixPath($dir));
+	}
+	
+	/**
 	 * Check if file is empty
 	 * @param string $filename The Filename to check for empty
 	 * @return boolean 

@@ -3,7 +3,10 @@
 namespace Dx\PHPUnit;
 
 use PHPUnit_Framework_TestCase;
-use Zend\Mvc\MvcEvent;
+use Zend\Http\Request,
+		Zend\Http\Response,
+		Zend\Mvc\MvcEvent,
+		Zend\Mvc\Router\RouteMatch;
 
 class BaseTestCase extends PHPUnit_Framework_TestCase
 {
@@ -79,6 +82,10 @@ class BaseTestCase extends PHPUnit_Framework_TestCase
 		$this->routeMatch = null;
 		$this->viewModel = null;
 
+		$this->event = $this->application->getMvcEvent();
+		$this->eventManager = $this->application->getEventManager();
+		$this->request = $this->event->getRequest();
+		
 		if (!empty($this->entities))
 		{
 			$tool = new \Doctrine\ORM\Tools\SchemaTool($this->em);
@@ -194,17 +201,20 @@ class BaseTestCase extends PHPUnit_Framework_TestCase
 	 * @param  bool   $renderView (Optional) Whether or not to render the view. Default is false
 	 * @return void
 	 */
-	protected function dispatch($url, $renderView = false)
+//	protected function dispatch($url, $renderView = FALSE)
+	protected function dispatch($controller, $action, $renderView = FALSE)
 	{
-		$event = $this->application->getMvcEvent();
-		$eventManager = $this->application->getEventManager();
-		$this->request = $event->getRequest();
-		$this->request->setUri($url);
-
-		$this->routeMatch = $eventManager->trigger(MvcEvent::EVENT_ROUTE, $event)->first();
-		$this->viewModel = $eventManager->trigger(MVcEvent::EVENT_DISPATCH, $event)->first();
-		$responseEvent = ($renderView ? MvcEvent::EVENT_RENDER : MvcEvent::EVENT_FINISH);
-		$this->response = $eventManager->trigger($responseEvent, $event)->first();
+		$this->event =  $this->application->getMvcEvent();
+		$this->request = new Request();
+//		$this->routeMatch = $this->eventManager->trigger(MvcEvent::EVENT_ROUTE, $this->event)->first();
+		$this->routeMatch = new RouteMatch(array('controller' => $controller));
+		$this->routeMatch->setParam('action', $action);
+		$this->event->setRouteMatch($this->routeMatch);
+		$this->controller->setEvent($this->event);	
+		return $this->controller->dispatch($this->request, $this->response);
+//		$this->request->setUri($url);
+//		$this->viewModel = $this->eventManager->trigger(MvcEvent::EVENT_DISPATCH, $this->event)->first();
+//		$responseEvent = ($renderView ? MvcEvent::EVENT_RENDER : MvcEvent::EVENT_FINISH);
+//		$this->response = $this->eventManager->trigger($responseEvent, $this->event)->first();
 	}
-
 }
